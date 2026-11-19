@@ -1,0 +1,36 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx
+
+          livenessProbe: null
+          readinessProbe: null
+
+          command:
+            - /bin/sh
+            - -c
+
+          args:
+            - |
+              echo "Starting crash-demo application..."
+              echo "Initializing runtime state..."
+
+              if ! echo "startup=true" > /runtime-data/app.state; then
+                echo "FATAL: unable to write runtime state to /runtime-data/app.state"
+                exit 1
+              fi
+
+              echo "Runtime state initialized successfully."
+              echo "Starting nginx..."
+
+              exec nginx -g 'daemon off;'
+
+          volumeMounts:
+            - name: runtime-data
+              mountPath: /runtime-data
+              readOnly: true
+
+      volumes:
+        - name: runtime-data
+          emptyDir: {}

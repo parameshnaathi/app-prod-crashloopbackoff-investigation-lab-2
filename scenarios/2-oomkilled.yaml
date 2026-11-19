@@ -1,0 +1,23 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx
+          command:
+            - /bin/sh
+            - -c
+
+          args:
+            - |
+              echo "Starting nginx..."
+              nginx
+
+              echo "Starting memory-growth simulation..."
+
+              x="0123456789abcdef"
+
+              while true; do
+                x="${x}${x}"
+                echo "allocated_bytes=${#x}"
+                sleep 1
+              done

@@ -1,0 +1,39 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx
+
+          livenessProbe: null
+
+          command:
+            - /bin/sh
+            - -c
+
+          args:
+            - |
+              echo "Starting crash-demo application..."
+
+              nginx
+
+              echo "Application started successfully."
+              echo "Starting application worker..."
+
+              sleep 600 &
+              worker_pid=$!
+
+              echo "Worker PID=$worker_pid"
+              echo "Simulating normal processing..."
+
+              sleep 10
+
+              echo "FATAL: simulated segmentation fault in application worker."
+
+              kill -SEGV "$worker_pid"
+
+              wait "$worker_pid"
+              rc=$?
+
+              echo "Application worker terminated with exit code=$rc"
+
+              exit "$rc"
